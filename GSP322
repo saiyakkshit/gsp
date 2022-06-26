@@ -1,0 +1,30 @@
+step 1: type this command in cloud shell
+
+  gcloud compute firewall-rules delete open-access
+
+step 2: Start the bastion host instance Go to Compute Engine and click 3 dots click start/Resume Bastion instance.
+
+step 3: Replace the "[SSH IAP network tag]" with the network tag provided in the lab.
+
+  gcloud compute firewall-rules create ssh-ingress --allow=tcp:22 --source-ranges 35.235.240.0/20 --target-tags [SSH IAP network tag] --network acme-vpc
+
+  gcloud compute instances add-tags bastion --tags=[SSH IAP network tag] --zone=us-central1-b
+
+step 4:Replace the "[HTTP network tag]" with the network tag provided in the lab.
+
+  gcloud compute firewall-rules create http-ingress --allow=tcp:80 --source-ranges 0.0.0.0/0 --target-tags [HTTP network tag] --network acme-vpc
+
+  gcloud compute instances add-tags juice-shop --tags=[HTTP network tag] --zone=us-central1-b
+
+step 5: Replace the "[SSH internal network tag]" with the network tag provided in the lab.
+
+  gcloud compute firewall-rules create internal-ssh-ingress --allow=tcp:22 --source-ranges 192.168.10.0/24 --target-tags [SSH internal network tag] --network acme-vpc
+
+  gcloud compute instances add-tags juice-shop --tags=[SSH internal network tag] --zone=us-central1-b
+  
+ step 6: In Compute Engine -> VM Instances page, click the SSH button for the bastion host. Then SSH to juice-shop by 
+  ssh [Internal IP address of juice-shop]
+  
+  or
+  
+  gcloud compute ssh juice-shop --internal-ip
