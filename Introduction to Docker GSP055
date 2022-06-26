@@ -1,0 +1,92 @@
+step 1:Open up Cloud Shell and enter the following command to run a hello world container to get started:
+  docker run hello-world
+step 2:Run the following command to take a look at the container image it pulled from Docker Hub:
+  docker images
+step 3: Now run the container again
+  docker run hello-world
+step 4: Finally, look at the running containers by running the following command:
+  docker ps
+step 5:In order to see all containers, including ones that have finished executing, run
+  docker ps -a
+step 6:Next, build a Docker image that's based on a simple node application. Execute the following command to create and switch into a folder named test.
+  mkdir test && cd test
+step 7: Create a Dockerfile:
+  cat > Dockerfile <<EOF
+  # Use an official Node runtime as the parent image
+  FROM node:lts
+  # Set the working directory in the container to /app
+  WORKDIR /app
+  # Copy the current directory contents into the container at /app
+  ADD . /app
+  # Make the container's port 80 available to the outside world
+  EXPOSE 80
+  # Run app.js using node when the container launches
+  CMD ["node", "app.js"]
+  EOF
+step 8: Now you'll write the node application, and after that you'll build the image. Run the following to create the node application:
+  cat > app.js <<EOF
+  const http = require('http');
+  const hostname = '0.0.0.0';
+  const port = 80;
+  const server = http.createServer((req, res) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/plain');
+      res.end('Hello World\n');
+  });
+  server.listen(port, hostname, () => {
+      console.log('Server running at http://%s:%s/', hostname, port);
+  });
+  process.on('SIGINT', function() {
+      console.log('Caught interrupt signal and will exit');
+      process.exit();
+  });
+  EOF
+step 9:This is a simple HTTP server that listens on port 80 and returns "Hello World".
+Now build the image.
+Note again the ".", which means current directory so you need to run this command from within the directory that has the Dockerfile:
+
+  docker build -t node-app:0.1 .
+
+step 10:Now, run the following command to look at the images you built:
+  docker images
+
+step 11:In this module, use this code to run containers based on the image you built:
+  docker run -p 4000:80 --name my-app node-app:0.1
+  
+step 12:Open another terminal (in Cloud Shell, click the + icon), and test the server:
+
+  curl http://localhost:4000
+step 13:Close the initial terminal and then run the following command to stop and remove the container:
+  
+  docker stop my-app && docker rm my-app
+step 14:Now run the following command to start the container in the background:
+
+  docker run -p 4000:80 --name my-app -d node-app:0.1
+  docker ps
+step 15: run by replacing container id
+  docker logs [container_id]
+
+step 16:Next, modify the application. In your Cloud Shell, open the test directory you created earlier in the lab:
+  cd test
+
+step 17:edit Edit app.js with a text editor of your choice (for example nano or vim) and replace "Hello World" with another string:
+  ....
+  const server = http.createServer((req, res) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/plain');
+      res.end('Welcome to Cloud\n');
+  });
+  ....
+step 18:Build this new image and tag it with 0.2:
+  docker build -t node-app:0.2 .
+
+step 19:Run another container with the new image version. Notice how the host's port is mapped to 8080 instead of 80. You can't use host port 4000 because it's already in use.
+
+  docker run -p 8080:80 --name my-app-2 -d node-app:0.2
+  docker ps
+  
+step 20:You can look at the logs of a container using docker logs [container_id]. If you want to follow the log's output as the container is running, use the -f option.
+
+  docker logs -f [container_id]
+ 
+follow the commands as per the given steps in gcrf
